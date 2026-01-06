@@ -1,0 +1,12 @@
+---
+import DashboardLayout from "../../layouts/DashboardLayout.astro";
+import TeacherDashboard from "../../components/dashboard/TeacherDashboard.jsx";
+---
+
+<DashboardLayout
+    title="Teacher Dashboard - Unity Secondary School"
+    role="teacher"
+    userName="Dr. Ngozi Eze"
+>
+    <TeacherDashboard client:load />
+</DashboardLayout>

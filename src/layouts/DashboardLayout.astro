@@ -1,0 +1,118 @@
+---
+import "../styles/global.css";
+import Sidebar from "../components/dashboard/Sidebar.jsx";
+import Topbar from "../components/dashboard/Topbar.jsx";
+
+interface Props {
+    title?: string;
+    role: "student" | "teacher" | "parent" | "admin";
+    userName?: string;
+    userAvatar?: string;
+}
+
+const {
+    title = "Dashboard - Unity Secondary School",
+    role,
+    userName = "User",
+    userAvatar = "",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="generator" content={Astro.generator} />
+        <title>{title}</title>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    </head>
+    <body
+        class="min-h-screen bg-neutral-100 dark:bg-neutral-950 transition-colors duration-300"
+    >
+        <!-- Theme initialization script -->
+        <script is:inline>
+            const savedTheme = localStorage.getItem("theme");
+            const systemPrefersDark = window.matchMedia(
+                "(prefers-color-scheme: dark)",
+            ).matches;
+
+            if (savedTheme === "dark" || (!savedTheme && systemPrefersDark)) {
+                document.documentElement.classList.add("dark");
+            }
+        </script>
+
+        <div class="flex min-h-screen">
+            <!-- Sidebar -->
+            <Sidebar role={role} client:load />
+
+            <!-- Main Content Area -->
+            <div
+                class="flex-1 flex flex-col lg:ml-[280px] transition-all duration-300"
+            >
+                <!-- Topbar -->
+                <Topbar
+                    userName={userName}
+                    userAvatar={userAvatar}
+                    role={role}
+                    client:load
+                />
+
+                <!-- Page Content -->
+                <main class="flex-1 p-4 md:p-6 lg:p-8 mt-16">
+                    <div class="max-w-7xl mx-auto animate-fade-in">
+                        <slot />
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        <!-- Mobile sidebar overlay -->
+        <div
+            id="sidebar-overlay"
+            class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden lg:hidden"
+        >
+        </div>
+
+        <script>
+            // Theme toggle functionality
+            function toggleTheme() {
+                const html = document.documentElement;
+                const isDark = html.classList.contains("dark");
+
+                if (isDark) {
+                    html.classList.remove("dark");
+                    localStorage.setItem("theme", "light");
+                } else {
+                    html.classList.add("dark");
+                    localStorage.setItem("theme", "dark");
+                }
+            }
+
+            (window as any).toggleTheme = toggleTheme;
+
+            // Mobile sidebar toggle
+            function toggleSidebar() {
+                const sidebar = document.getElementById("sidebar");
+                const overlay = document.getElementById("sidebar-overlay");
+
+                if (sidebar && overlay) {
+                    sidebar.classList.toggle("-translate-x-full");
+                    overlay.classList.toggle("hidden");
+                }
+            }
+
+            (window as any).toggleSidebar = toggleSidebar;
+
+            // Close sidebar when clicking overlay
+            document
+                .getElementById("sidebar-overlay")
+                ?.addEventListener("click", () => {
+                    (window as any).toggleSidebar();
+                });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,12 @@
+---
+import DashboardLayout from "../../layouts/DashboardLayout.astro";
+import AdminDashboard from "../../components/dashboard/AdminDashboard.jsx";
+---
+
+<DashboardLayout
+    title="Admin Dashboard - Unity Secondary School"
+    role="admin"
+    userName="Admin User"
+>
+    <AdminDashboard client:load />
+</DashboardLayout>

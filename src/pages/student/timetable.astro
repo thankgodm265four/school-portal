@@ -1,0 +1,12 @@
+---
+import DashboardLayout from "../../layouts/DashboardLayout.astro";
+import TimetableView from "../../components/student/TimetableView.jsx";
+---
+
+<DashboardLayout
+    title="Timetable - Unity Secondary School"
+    role="student"
+    userName="Adaeze Okonkwo"
+>
+    <TimetableView client:load />
+</DashboardLayout>

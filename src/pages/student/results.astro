@@ -1,0 +1,12 @@
+---
+import DashboardLayout from "../../layouts/DashboardLayout.astro";
+import ResultsView from "../../components/student/ResultsView.jsx";
+---
+
+<DashboardLayout
+    title="Results - Unity Secondary School"
+    role="student"
+    userName="Adaeze Okonkwo"
+>
+    <ResultsView client:load />
+</DashboardLayout>

@@ -1,0 +1,12 @@
+---
+import DashboardLayout from "../../layouts/DashboardLayout.astro";
+import ProfileView from "../../components/shared/ProfileView.jsx";
+---
+
+<DashboardLayout
+    title="Profile - Unity Secondary School"
+    role="student"
+    userName="Adaeze Okonkwo"
+>
+    <ProfileView role="student" client:load />
+</DashboardLayout>

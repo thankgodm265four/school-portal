@@ -1,0 +1,12 @@
+---
+import DashboardLayout from "../../layouts/DashboardLayout.astro";
+import FeesView from "../../components/student/FeesView.jsx";
+---
+
+<DashboardLayout
+    title="School Fees - Unity Secondary School"
+    role="student"
+    userName="Adaeze Okonkwo"
+>
+    <FeesView client:load />
+</DashboardLayout>

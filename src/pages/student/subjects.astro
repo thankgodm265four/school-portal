@@ -1,0 +1,12 @@
+---
+import DashboardLayout from "../../layouts/DashboardLayout.astro";
+import SubjectsView from "../../components/student/SubjectsView.jsx";
+---
+
+<DashboardLayout
+    title="Subjects - Unity Secondary School"
+    role="student"
+    userName="Adaeze Okonkwo"
+>
+    <SubjectsView client:load />
+</DashboardLayout>

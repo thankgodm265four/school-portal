@@ -1,0 +1,12 @@
+---
+import DashboardLayout from "../../layouts/DashboardLayout.astro";
+import ScoreUploadView from "../../components/teacher/ScoreUploadView.jsx";
+---
+
+<DashboardLayout
+    title="Upload Scores - Unity Secondary School"
+    role="teacher"
+    userName="Dr. Ngozi Eze"
+>
+    <ScoreUploadView client:load />
+</DashboardLayout>

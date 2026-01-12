@@ -57,14 +57,15 @@ export default function UserManagementView() {
 
     // Transform Supabase data to match component's expected format
     const transformStudentsData = (data) => {
+        console.log('Raw student data from Supabase:', data); // Debug log
         return data.map(student => ({
             ...student,
-            firstName: student.first_name,
-            lastName: student.last_name,
-            regNumber: student.reg_number,
-            parentId: student.parent_id,
-            dateOfBirth: student.date_of_birth,
-            enrollmentDate: student.enrollment_date
+            firstName: student.first_name || student.firstName,
+            lastName: student.last_name || student.lastName,
+            regNumber: student.reg_number || student.regNumber,
+            parentId: student.parent_id || student.parentId,
+            dateOfBirth: student.date_of_birth || student.dateOfBirth,
+            enrollmentDate: student.enrollment_date || student.enrollmentDate
         }));
     };
 

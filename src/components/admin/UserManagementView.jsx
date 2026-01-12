@@ -58,15 +58,33 @@ export default function UserManagementView() {
     // Transform Supabase data to match component's expected format
     const transformStudentsData = (data) => {
         console.log('Raw student data from Supabase:', data); // Debug log
-        return data.map(student => ({
-            ...student,
-            firstName: student.first_name || student.firstName,
-            lastName: student.last_name || student.lastName,
-            regNumber: student.reg_number || student.regNumber,
-            parentId: student.parent_id || student.parentId,
-            dateOfBirth: student.date_of_birth || student.dateOfBirth,
-            enrollmentDate: student.enrollment_date || student.enrollmentDate
-        }));
+        return data.map((student, index) => {
+            const transformed = {
+                ...student,
+                firstName: student.first_name || student.firstName || '',
+                lastName: student.last_name || student.lastName || '',
+                regNumber: student.reg_number || student.regNumber || '',
+                parentId: student.parent_id || student.parentId,
+                dateOfBirth: student.date_of_birth || student.dateOfBirth,
+                enrollmentDate: student.enrollment_date || student.enrollmentDate
+            };
+            
+            // Debug log for individual student transformation
+            if (index < 3) { // Only log first 3 records to avoid console spam
+                console.log(`Student ${index + 1} transformed:`, {
+                    original_reg_number: student.reg_number,
+                    original_first_name: student.first_name,
+                    original_last_name: student.last_name,
+                    transformed: {
+                        regNumber: transformed.regNumber,
+                        firstName: transformed.firstName,
+                        lastName: transformed.lastName
+                    }
+                });
+            }
+            
+            return transformed;
+        });
     };
 
     const transformTeachersData = (data) => {
@@ -148,7 +166,10 @@ export default function UserManagementView() {
         if (activeTab === 'students') {
             return [
                 ...common,
-                { key: 'regNumber', header: 'Reg Number', render: (val) => <span className="font-mono text-xs">{val}</span> },
+                { key: 'regNumber', header: 'Reg Number', render: (val, row) => {
+                    console.log('Rendering regNumber for row:', { regNumber: val, fullRow: row });
+                    return <span className="font-mono text-xs">{val || 'N/A'}</span>;
+                } },
                 { key: 'class', header: 'Class', render: (val, row) => `${val} ${row.arm}` },
                 {
                     key: 'loginCredentials',

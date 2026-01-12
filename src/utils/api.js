@@ -439,3 +439,123 @@ export async function updateSettings(settings) {
         throw error;
     }
 }
+
+// =============================================================================
+// AUTHENTICATION OPERATIONS
+// =============================================================================
+
+/**
+ * Authenticate a student with first name and registration number
+ * @param {string} firstName - Student's first name
+ * @param {string} regNumber - Student's registration number (used as password)
+ * @returns {Promise<Object>} Student object if authentication successful
+ */
+export async function authenticateStudent(firstName, regNumber) {
+    if (!isSupabaseConfigured()) {
+        throw new Error('Supabase not configured');
+    }
+
+    const { data, error } = await supabase
+        .from('students')
+        .select('*')
+        .ilike('first_name', firstName) // Case-insensitive match
+        .eq('reg_number', regNumber)
+        .eq('status', 'Active')
+        .single();
+
+    if (error) {
+        console.error('Authentication failed:', error);
+        throw new Error('Invalid credentials');
+    }
+
+    if (!data) {
+        throw new Error('Invalid credentials');
+    }
+
+    return data;
+}
+
+/**
+ * Authenticate a teacher with first name and staff ID
+ * @param {string} firstName - Teacher's first name
+ * @param {string} staffId - Teacher's staff ID (used as password)
+ * @returns {Promise<Object>} Teacher object if authentication successful
+ */
+export async function authenticateTeacher(firstName, staffId) {
+    if (!isSupabaseConfigured()) {
+        throw new Error('Supabase not configured');
+    }
+
+    const { data, error } = await supabase
+        .from('teachers')
+        .select('*')
+        .ilike('first_name', firstName) // Case-insensitive match
+        .eq('staff_id', staffId)
+        .eq('status', 'Active')
+        .single();
+
+    if (error) {
+        console.error('Authentication failed:', error);
+        throw new Error('Invalid credentials');
+    }
+
+    if (!data) {
+        throw new Error('Invalid credentials');
+    }
+
+    return data;
+}
+
+/**
+ * Authenticate a parent with email and custom password
+ * @param {string} email - Parent's email
+ * @param {string} password - Parent's password
+ * @returns {Promise<Object>} Parent object if authentication successful
+ */
+export async function authenticateParent(email, password) {
+    if (!isSupabaseConfigured()) {
+        throw new Error('Supabase not configured');
+    }
+
+    // For now, using email as both username and password
+    // In production, you'd want proper password hashing
+    const { data, error } = await supabase
+        .from('parents')
+        .select('*')
+        .eq('email', email)
+        .single();
+
+    if (error) {
+        console.error('Authentication failed:', error);
+        throw new Error('Invalid credentials');
+    }
+
+    if (!data) {
+        throw new Error('Invalid credentials');
+    }
+
+    return data;
+}
+
+/**
+ * Admin authentication (temporary hardcoded for demo)
+ * @param {string} username - Admin username
+ * @param {string} password - Admin password
+ * @returns {Promise<Object>} Admin object if authentication successful
+ */
+export async function authenticateAdmin(username, password) {
+    // Temporary hardcoded admin credentials
+    // In production, store this in database with proper hashing
+    if (username === 'admin' && password === 'admin123') {
+        return {
+            id: 'admin-1',
+            first_name: 'Admin',
+            last_name: 'User',
+            email: 'admin@unityschool.edu.ng',
+            role: 'admin'
+        };
+    }
+
+    throw new Error('Invalid admin credentials');
+}
+

@@ -150,6 +150,33 @@ export default function UserManagementView() {
                 { key: 'regNumber', header: 'Reg Number', render: (val) => <span className="font-mono text-xs">{val}</span> },
                 { key: 'class', header: 'Class', render: (val, row) => `${val} ${row.arm}` },
                 {
+                    key: 'loginCredentials',
+                    header: 'Login Credentials',
+                    render: (_, row) => (
+                        <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs text-neutral-500">Username:</span>
+                                <span className="text-xs font-medium font-mono">{row.firstName}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs text-neutral-500">Password:</span>
+                                <span className="text-xs font-medium font-mono">{row.regNumber}</span>
+                                <button
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(row.regNumber);
+                                    }}
+                                    className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded"
+                                    title="Copy password"
+                                >
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    )
+                },
+                {
                     key: 'status',
                     header: 'Status',
                     render: (val) => <Badge variant={val === 'Active' ? 'success' : 'danger'}>{val}</Badge>
@@ -160,7 +187,33 @@ export default function UserManagementView() {
                 ...common,
                 { key: 'staffId', header: 'Staff ID', render: (val) => <span className="font-mono text-xs">{val}</span> },
                 { key: 'subjects', header: 'Subjects', render: (val) => <span className="text-xs">{Array.isArray(val) ? val.join(', ') : val}</span> },
-                { key: 'qualification', header: 'Qualification' }
+                {
+                    key: 'loginCredentials',
+                    header: 'Login Credentials',
+                    render: (_, row) => (
+                        <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs text-neutral-500">Username:</span>
+                                <span className="text-xs font-medium font-mono">{row.firstName}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs text-neutral-500">Password:</span>
+                                <span className="text-xs font-medium font-mono">{row.staffId}</span>
+                                <button
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(row.staffId);
+                                    }}
+                                    className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded"
+                                    title="Copy password"
+                                >
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    )
+                }
             ];
         } else {
             return [

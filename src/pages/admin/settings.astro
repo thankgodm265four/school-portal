@@ -1,6 +1,5 @@
 ---
 import DashboardLayout from "../../layouts/DashboardLayout.astro";
-import SettingsView from "../../components/admin/SettingsView.jsx";
 ---
 
 <DashboardLayout
@@ -8,5 +7,398 @@ import SettingsView from "../../components/admin/SettingsView.jsx";
     role="admin"
     userName="Admin User"
 >
-    <SettingsView client:load />
+    <div class="space-y-6">
+        <!-- Header -->
+        <div>
+            <h1 class="text-2xl font-bold text-neutral-900 dark:text-white">
+                Settings
+            </h1>
+            <p class="text-neutral-500 mt-1">
+                Manage system settings and preferences
+            </p>
+        </div>
+
+        <!-- Settings Cards -->
+        <div class="grid md:grid-cols-2 gap-6">
+            <!-- School Information -->
+            <div class="card p-6">
+                <h2
+                    class="text-lg font-semibold text-neutral-900 dark:text-white mb-4"
+                >
+                    School Information
+                </h2>
+                <div class="space-y-4">
+                    <div>
+                        <label
+                            class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
+                            >School Name</label
+                        >
+                        <input
+                            type="text"
+                            value="Unity Secondary School"
+                            class="input"
+                        />
+                    </div>
+                    <div>
+                        <label
+                            class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
+                            >School Motto</label
+                        >
+                        <input
+                            type="text"
+                            value="Knowledge, Integrity, Excellence"
+                            class="input"
+                        />
+                    </div>
+                    <div>
+                        <label
+                            class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
+                            >Address</label
+                        >
+                        <textarea class="input" rows="2"
+                            >23 Education Avenue, Victoria Island, Lagos,
+                            Nigeria</textarea
+                        >
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label
+                                class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
+                                >Phone</label
+                            >
+                            <input
+                                type="tel"
+                                value="+234 801 234 5678"
+                                class="input"
+                            />
+                        </div>
+                        <div>
+                            <label
+                                class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
+                                >Email</label
+                            >
+                            <input
+                                type="email"
+                                value="info@unityschool.edu.ng"
+                                class="input"
+                            />
+                        </div>
+                    </div>
+                    <button class="btn-primary">Save Changes</button>
+                </div>
+            </div>
+
+            <!-- Academic Session -->
+            <div class="card p-6">
+                <h2
+                    class="text-lg font-semibold text-neutral-900 dark:text-white mb-4"
+                >
+                    Academic Session
+                </h2>
+                <div class="space-y-4">
+                    <div>
+                        <label
+                            class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
+                            >Current Session</label
+                        >
+                        <select class="input">
+                            <option>2025/2026</option>
+                            <option>2024/2025</option>
+                            <option>2023/2024</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label
+                            class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
+                            >Current Term</label
+                        >
+                        <select class="input">
+                            <option>First Term</option>
+                            <option>Second Term</option>
+                            <option>Third Term</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label
+                            class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
+                            >Term Start Date</label
+                        >
+                        <input type="date" value="2025-09-09" class="input" />
+                    </div>
+                    <div>
+                        <label
+                            class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
+                            >Term End Date</label
+                        >
+                        <input type="date" value="2025-12-15" class="input" />
+                    </div>
+                    <button class="btn-primary">Save Changes</button>
+                </div>
+            </div>
+
+            <!-- System Preferences -->
+            <div class="card p-6">
+                <h2
+                    class="text-lg font-semibold text-neutral-900 dark:text-white mb-4"
+                >
+                    System Preferences
+                </h2>
+                <div class="space-y-4">
+                    <div
+                        class="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-lg"
+                    >
+                        <div>
+                            <p
+                                class="text-sm font-medium text-neutral-900 dark:text-white"
+                            >
+                                Email Notifications
+                            </p>
+                            <p class="text-xs text-neutral-500">
+                                Send email alerts for important events
+                            </p>
+                        </div>
+                        <span class="text-success-600 text-sm font-medium"
+                            >Enabled</span
+                        >
+                    </div>
+                    <div
+                        class="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-lg"
+                    >
+                        <div>
+                            <p
+                                class="text-sm font-medium text-neutral-900 dark:text-white"
+                            >
+                                SMS Notifications
+                            </p>
+                            <p class="text-xs text-neutral-500">
+                                Send SMS for urgent updates
+                            </p>
+                        </div>
+                        <span class="text-neutral-500 text-sm font-medium"
+                            >Disabled</span
+                        >
+                    </div>
+                    <div
+                        class="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-lg"
+                    >
+                        <div>
+                            <p
+                                class="text-sm font-medium text-neutral-900 dark:text-white"
+                            >
+                                Auto Backup
+                            </p>
+                            <p class="text-xs text-neutral-500">
+                                Daily database backup
+                            </p>
+                        </div>
+                        <span class="text-success-600 text-sm font-medium"
+                            >Enabled</span
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grading System -->
+            <div class="card p-6">
+                <h2
+                    class="text-lg font-semibold text-neutral-900 dark:text-white mb-4"
+                >
+                    Grading System
+                </h2>
+                <div class="space-y-3">
+                    <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                        Current System: WAEC/NECO Style
+                    </p>
+                    <div class="space-y-2">
+                        <div
+                            class="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-lg"
+                        >
+                            <div class="flex items-center gap-3">
+                                <span class="font-mono text-sm font-semibold"
+                                    >A1</span
+                                >
+                                <span
+                                    class="text-sm text-neutral-600 dark:text-neutral-400"
+                                    >75-100</span
+                                >
+                            </div>
+                            <span class="text-xs text-success-600"
+                                >Excellent</span
+                            >
+                        </div>
+                        <div
+                            class="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-lg"
+                        >
+                            <div class="flex items-center gap-3">
+                                <span class="font-mono text-sm font-semibold"
+                                    >B2-B3</span
+                                >
+                                <span
+                                    class="text-sm text-neutral-600 dark:text-neutral-400"
+                                    >65-74</span
+                                >
+                            </div>
+                            <span class="text-xs text-success-600"
+                                >Very Good</span
+                            >
+                        </div>
+                        <div
+                            class="flex items-center justify-between p-3 bg-neutral-50 dark:text-neutral-800 rounded-lg"
+                        >
+                            <div class="flex items-center gap-3">
+                                <span class="font-mono text-sm font-semibold"
+                                    >C4-C6</span
+                                >
+                                <span
+                                    class="text-sm text-neutral-600 dark:text-neutral-400"
+                                    >50-64</span
+                                >
+                            </div>
+                            <span class="text-xs text-primary-600">Credit</span>
+                        </div>
+                        <div
+                            class="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-lg"
+                        >
+                            <div class="flex items-center gap-3">
+                                <span class="font-mono text-sm font-semibold"
+                                    >D7-E8</span
+                                >
+                                <span
+                                    class="text-sm text-neutral-600 dark:text-neutral-400"
+                                    >40-49</span
+                                >
+                            </div>
+                            <span class="text-xs text-warning-600">Pass</span>
+                        </div>
+                        <div
+                            class="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-800 rounded-lg"
+                        >
+                            <div class="flex items-center gap-3">
+                                <span class="font-mono text-sm font-semibold"
+                                    >F9</span
+                                >
+                                <span
+                                    class="text-sm text-neutral-600 dark:text-neutral-400"
+                                    >0-39</span
+                                >
+                            </div>
+                            <span class="text-xs text-danger-600">Fail</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Database Info -->
+        <div class="card p-6">
+            <h2
+                class="text-lg font-semibold text-neutral-900 dark:text-white mb-4"
+            >
+                Database Information
+            </h2>
+            <div class="grid md:grid-cols-3 gap-4">
+                <div
+                    class="p-4 bg-primary-50 dark:bg-primary-900/20 rounded-xl"
+                >
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-10 h-10 rounded-lg bg-primary-100 dark:bg-primary-800 flex items-center justify-center"
+                        >
+                            <svg
+                                class="w-5 h-5 text-primary-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"
+                                ></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <p
+                                class="text-sm text-neutral-600 dark:text-neutral-400"
+                            >
+                                Database
+                            </p>
+                            <p
+                                class="text-lg font-semibold text-neutral-900 dark:text-white"
+                            >
+                                Supabase
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="p-4 bg-success-50 dark:bg-success-900/20 rounded-xl"
+                >
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-10 h-10 rounded-lg bg-success-100 dark:bg-success-800 flex items-center justify-center"
+                        >
+                            <svg
+                                class="w-5 h-5 text-success-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                ></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <p
+                                class="text-sm text-neutral-600 dark:text-neutral-400"
+                            >
+                                Status
+                            </p>
+                            <p class="text-lg font-semibold text-success-600">
+                                Connected
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 bg-accent-50 dark:bg-accent-900/20 rounded-xl">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-10 h-10 rounded-lg bg-accent-100 dark:bg-accent-800 flex items-center justify-center"
+                        >
+                            <svg
+                                class="w-5 h-5 text-accent-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                ></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <p
+                                class="text-sm text-neutral-600 dark:text-neutral-400"
+                            >
+                                Last Backup
+                            </p>
+                            <p
+                                class="text-lg font-semibold text-neutral-900 dark:text-white"
+                            >
+                                Today
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </DashboardLayout>

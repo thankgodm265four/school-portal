@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Button, Input, Select, Badge, Avatar, Modal, ConfirmModal } from '../ui/Components';
 import DataTable from '../ui/DataTable';
-import { students, teachers, parents } from '../../data/mockData';
+import { getStudents, createStudent, updateStudent, deleteStudent, getTeachers, createTeacher, updateTeacher, deleteTeacher, getParents } from '../../utils/api';
 
 export default function UserManagementView() {
     const [activeTab, setActiveTab] = useState('students');
@@ -9,11 +9,113 @@ export default function UserManagementView() {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
 
+    // Data state
+    const [students, setStudents] = useState([]);
+    const [teachers, setTeachers] = useState([]);
+    const [parents, setParents] = useState([]);
+
+    // Loading and error states
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [saveLoading, setSaveLoading] = useState(false);
+
+    // Form state
+    const [formData, setFormData] = useState({});
+
     const tabs = [
         { id: 'students', label: 'Students' },
         { id: 'teachers', label: 'Teachers' },
         { id: 'parents', label: 'Parents' },
     ];
+
+    // Fetch data on component mount and tab change
+    useEffect(() => {
+        fetchData();
+    }, [activeTab]);
+
+    const fetchData = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            if (activeTab === 'students') {
+                const data = await getStudents();
+                setStudents(transformStudentsData(data));
+            } else if (activeTab === 'teachers') {
+                const data = await getTeachers();
+                setTeachers(transformTeachersData(data));
+            } else if (activeTab === 'parents') {
+                const data = await getParents();
+                setParents(data);
+            }
+        } catch (err) {
+            console.error('Error fetching data:', err);
+            setError(err.message || 'Failed to fetch data. Please check your Supabase configuration.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Transform Supabase data to match component's expected format
+    const transformStudentsData = (data) => {
+        return data.map(student => ({
+            ...student,
+            firstName: student.first_name,
+            lastName: student.last_name,
+            regNumber: student.reg_number,
+            parentId: student.parent_id,
+            dateOfBirth: student.date_of_birth,
+            enrollmentDate: student.enrollment_date
+        }));
+    };
+
+    const transformTeachersData = (data) => {
+        return data.map(teacher => ({
+            ...teacher,
+            firstName: teacher.first_name,
+            lastName: teacher.last_name,
+            staffId: teacher.staff_id
+        }));
+    };
+
+    // Transform form data back to Supabase format
+    const transformToSupabaseFormat = (data, type) => {
+        const base = {
+            first_name: data.firstName,
+            last_name: data.lastName,
+            email: data.email,
+            phone: data.phone,
+        };
+
+        if (type === 'student') {
+            return {
+                ...base,
+                reg_number: data.regNumber || `USS/${new Date().getFullYear()}/${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`,
+                gender: data.gender || '',
+                date_of_birth: data.dateOfBirth || null,
+                class: data.class,
+                arm: data.arm,
+                status: data.status || 'Active'
+            };
+        } else if (type === 'teacher') {
+            return {
+                ...base,
+                staff_id: data.staffId || `TCH/${new Date().getFullYear()}/${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`,
+                gender: data.gender || '',
+                subjects: data.subjects || [],
+                classes: data.classes || [],
+                qualification: data.qualification || '',
+                status: data.status || 'Active'
+            };
+        } else if (type === 'parent') {
+            return {
+                ...base,
+                title: data.title || '',
+                occupation: data.occupation || '',
+                address: data.address || ''
+            };
+        }
+        return base;
+    };
 
     const getData = () => {
         switch (activeTab) {
@@ -57,13 +159,14 @@ export default function UserManagementView() {
             return [
                 ...common,
                 { key: 'staffId', header: 'Staff ID', render: (val) => <span className="font-mono text-xs">{val}</span> },
-                { key: 'subjects', header: 'Subjects', render: (val) => <span className="text-xs">{val.join(', ')}</span> },
+                { key: 'subjects', header: 'Subjects', render: (val) => <span className="text-xs">{Array.isArray(val) ? val.join(', ') : val}</span> },
                 { key: 'qualification', header: 'Qualification' }
             ];
         } else {
             return [
                 ...common,
-                { key: 'children', header: 'Children', render: (val) => <Badge variant="info">{val.length} Children</Badge> },
+                { key: 'title', header: 'Title' },
+                { key: 'occupation', header: 'Occupation' },
                 { key: 'address', header: 'Address', render: (val) => <span className="truncate max-w-[200px] block" title={val}>{val}</span> }
             ];
         }
@@ -71,6 +174,7 @@ export default function UserManagementView() {
 
     const handleEdit = (user) => {
         setSelectedUser(user);
+        setFormData(user);
         setIsModalOpen(true);
     };
 
@@ -79,10 +183,73 @@ export default function UserManagementView() {
         setIsDeleteModalOpen(true);
     };
 
-    const confirmDelete = () => {
-        // Mock delete logic
-        setIsDeleteModalOpen(false);
+    const confirmDelete = async () => {
+        if (!selectedUser) return;
+
+        setSaveLoading(true);
+        try {
+            if (activeTab === 'students') {
+                await deleteStudent(selectedUser.id);
+            } else if (activeTab === 'teachers') {
+                await deleteTeacher(selectedUser.id);
+            }
+
+            // Refresh data
+            await fetchData();
+            setIsDeleteModalOpen(false);
+            setSelectedUser(null);
+        } catch (err) {
+            console.error('Error deleting:', err);
+            setError(err.message || 'Failed to delete. Please try again.');
+        } finally {
+            setSaveLoading(false);
+        }
+    };
+
+    const handleSave = async () => {
+        setSaveLoading(true);
+        setError(null);
+
+        try {
+            const supabaseData = transformToSupabaseFormat(formData, activeTab.slice(0, -1));
+
+            if (selectedUser) {
+                // Update existing
+                if (activeTab === 'students') {
+                    await updateStudent(selectedUser.id, supabaseData);
+                } else if (activeTab === 'teachers') {
+                    await updateTeacher(selectedUser.id, supabaseData);
+                }
+            } else {
+                // Create new
+                if (activeTab === 'students') {
+                    await createStudent(supabaseData);
+                } else if (activeTab === 'teachers') {
+                    await createTeacher(supabaseData);
+                }
+            }
+
+            // Refresh data
+            await fetchData();
+            setIsModalOpen(false);
+            setSelectedUser(null);
+            setFormData({});
+        } catch (err) {
+            console.error('Error saving:', err);
+            setError(err.message || 'Failed to save. Please try again.');
+        } finally {
+            setSaveLoading(false);
+        }
+    };
+
+    const handleOpenModal = () => {
         setSelectedUser(null);
+        setFormData({});
+        setIsModalOpen(true);
+    };
+
+    const handleFormChange = (field, value) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
     };
 
     return (
@@ -92,13 +259,24 @@ export default function UserManagementView() {
                     <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">User Management</h1>
                     <p className="text-neutral-500 mt-1">Manage students, teachers, and parents accounts</p>
                 </div>
-                <Button onClick={() => { setSelectedUser(null); setIsModalOpen(true); }}>
+                <Button onClick={handleOpenModal} disabled={loading}>
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
                     Add New {activeTab.slice(0, -1)}
                 </Button>
             </div>
+
+            {error && (
+                <div className="p-4 bg-danger-50 dark:bg-danger-900/20 border border-danger-200 dark:border-danger-800 rounded-xl">
+                    <div className="flex items-center gap-2">
+                        <svg className="w-5 h-5 text-danger-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p className="text-sm text-danger-700 dark:text-danger-400">{error}</p>
+                    </div>
+                </div>
+            )}
 
             <Card padding={false}>
                 {/* Tabs */}
@@ -108,9 +286,10 @@ export default function UserManagementView() {
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
+                                disabled={loading}
                                 className={`pb-4 text-sm font-medium transition-colors relative ${activeTab === tab.id
-                                        ? 'text-primary-600 dark:text-primary-400'
-                                        : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
+                                    ? 'text-primary-600 dark:text-primary-400'
+                                    : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
                                     }`}
                             >
                                 {tab.label}
@@ -123,39 +302,46 @@ export default function UserManagementView() {
                 </div>
 
                 <div className="p-6">
-                    <DataTable
-                        columns={[
-                            ...getColumns(),
-                            {
-                                key: 'actions',
-                                header: '',
-                                render: (_, row) => (
-                                    <div className="flex justify-end gap-2">
-                                        <button
-                                            onClick={() => handleEdit(row)}
-                                            className="p-1 text-neutral-400 hover:text-primary-600 transition-colors"
-                                            title="Edit"
-                                        >
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                            </svg>
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(row)}
-                                            className="p-1 text-neutral-400 hover:text-danger-600 transition-colors"
-                                            title="Delete"
-                                        >
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                )
-                            }
-                        ]}
-                        data={getData()}
-                        searchPlaceholder={`Search ${activeTab}...`}
-                    />
+                    {loading ? (
+                        <div className="flex items-center justify-center py-12">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                            <span className="ml-3 text-neutral-600 dark:text-neutral-400">Loading...</span>
+                        </div>
+                    ) : (
+                        <DataTable
+                            columns={[
+                                ...getColumns(),
+                                {
+                                    key: 'actions',
+                                    header: '',
+                                    render: (_, row) => (
+                                        <div className="flex justify-end gap-2">
+                                            <button
+                                                onClick={() => handleEdit(row)}
+                                                className="p-1 text-neutral-400 hover:text-primary-600 transition-colors"
+                                                title="Edit"
+                                            >
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                </svg>
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(row)}
+                                                className="p-1 text-neutral-400 hover:text-danger-600 transition-colors"
+                                                title="Delete"
+                                            >
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    )
+                                }
+                            ]}
+                            data={getData()}
+                            searchPlaceholder={`Search ${activeTab}...`}
+                        />
+                    )}
                 </div>
             </Card>
 
@@ -167,30 +353,63 @@ export default function UserManagementView() {
             >
                 <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                        <Input label="First Name" defaultValue={selectedUser?.firstName} />
-                        <Input label="Last Name" defaultValue={selectedUser?.lastName} />
+                        <Input
+                            label="First Name"
+                            value={formData.firstName || ''}
+                            onChange={(e) => handleFormChange('firstName', e.target.value)}
+                        />
+                        <Input
+                            label="Last Name"
+                            value={formData.lastName || ''}
+                            onChange={(e) => handleFormChange('lastName', e.target.value)}
+                        />
                     </div>
-                    <Input label="Email" type="email" defaultValue={selectedUser?.email} />
-                    <Input label="Phone" type="tel" defaultValue={selectedUser?.phone} />
+                    <Input
+                        label="Email"
+                        type="email"
+                        value={formData.email || ''}
+                        onChange={(e) => handleFormChange('email', e.target.value)}
+                    />
+                    <Input
+                        label="Phone"
+                        type="tel"
+                        value={formData.phone || ''}
+                        onChange={(e) => handleFormChange('phone', e.target.value)}
+                    />
 
                     {activeTab === 'students' && (
                         <div className="grid grid-cols-2 gap-4">
                             <Select
                                 label="Class"
-                                options={['SS 1', 'SS 2', 'SS 3'].map(c => ({ value: c, label: c }))}
-                                defaultValue={selectedUser?.class}
+                                options={['SS 1', 'SS 2', 'SS 3', 'JSS 1', 'JSS 2', 'JSS 3'].map(c => ({ value: c, label: c }))}
+                                value={formData.class || ''}
+                                onChange={(e) => handleFormChange('class', e.target.value)}
                             />
                             <Select
                                 label="Arm"
-                                options={['A', 'B', 'C', 'D'].map(a => ({ value: a, label: a }))}
-                                defaultValue={selectedUser?.arm}
+                                options={['A', 'B', 'C', 'Science', 'Arts', 'Commercial'].map(a => ({ value: a, label: a }))}
+                                value={formData.arm || ''}
+                                onChange={(e) => handleFormChange('arm', e.target.value)}
                             />
                         </div>
                     )}
+
+                    {activeTab === 'teachers' && (
+                        <Input
+                            label="Qualification"
+                            value={formData.qualification || ''}
+                            onChange={(e) => handleFormChange('qualification', e.target.value)}
+                            placeholder="e.g., B.Sc Mathematics"
+                        />
+                    )}
                 </div>
                 <div className="mt-6 flex justify-end gap-3">
-                    <Button variant="ghost" onClick={() => setIsModalOpen(false)}>Cancel</Button>
-                    <Button onClick={() => setIsModalOpen(false)}>Save Changes</Button>
+                    <Button variant="ghost" onClick={() => setIsModalOpen(false)} disabled={saveLoading}>
+                        Cancel
+                    </Button>
+                    <Button onClick={handleSave} disabled={saveLoading}>
+                        {saveLoading ? 'Saving...' : 'Save Changes'}
+                    </Button>
                 </div>
             </Modal>
 
@@ -201,7 +420,7 @@ export default function UserManagementView() {
                 onConfirm={confirmDelete}
                 title="Delete User"
                 message={`Are you sure you want to delete ${selectedUser?.firstName} ${selectedUser?.lastName}? This action cannot be undone.`}
-                confirmText="Delete User"
+                confirmText={saveLoading ? 'Deleting...' : 'Delete User'}
                 variant="danger"
             />
         </div>

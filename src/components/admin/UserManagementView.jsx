@@ -420,29 +420,45 @@ export default function UserManagementView() {
                     />
 
                     {activeTab === 'students' && (
-                        <div className="grid grid-cols-2 gap-4">
-                            <Select
-                                label="Class"
-                                options={['SS 1', 'SS 2', 'SS 3', 'JSS 1', 'JSS 2', 'JSS 3'].map(c => ({ value: c, label: c }))}
-                                value={formData.class || ''}
-                                onChange={(e) => handleFormChange('class', e.target.value)}
+                        <>
+                            <Input
+                                label="Registration Number"
+                                value={formData.regNumber || ''}
+                                onChange={(e) => handleFormChange('regNumber', e.target.value)}
+                                placeholder="Auto-generated if left blank (e.g. USS/2024/001)"
                             />
-                            <Select
-                                label="Arm"
-                                options={['A', 'B', 'C', 'Science', 'Arts', 'Commercial'].map(a => ({ value: a, label: a }))}
-                                value={formData.arm || ''}
-                                onChange={(e) => handleFormChange('arm', e.target.value)}
-                            />
-                        </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <Select
+                                    label="Class"
+                                    options={['SS 1', 'SS 2', 'SS 3', 'JSS 1', 'JSS 2', 'JSS 3'].map(c => ({ value: c, label: c }))}
+                                    value={formData.class || ''}
+                                    onChange={(e) => handleFormChange('class', e.target.value)}
+                                />
+                                <Select
+                                    label="Arm"
+                                    options={['A', 'B', 'C', 'Science', 'Arts', 'Commercial'].map(a => ({ value: a, label: a }))}
+                                    value={formData.arm || ''}
+                                    onChange={(e) => handleFormChange('arm', e.target.value)}
+                                />
+                            </div>
+                        </>
                     )}
 
                     {activeTab === 'teachers' && (
-                        <Input
-                            label="Qualification"
-                            value={formData.qualification || ''}
-                            onChange={(e) => handleFormChange('qualification', e.target.value)}
-                            placeholder="e.g., B.Sc Mathematics"
-                        />
+                        <>
+                            <Input
+                                label="Staff ID"
+                                value={formData.staffId || ''}
+                                onChange={(e) => handleFormChange('staffId', e.target.value)}
+                                placeholder="Auto-generated if left blank (e.g. TCH/2024/001)"
+                            />
+                            <Input
+                                label="Qualification"
+                                value={formData.qualification || ''}
+                                onChange={(e) => handleFormChange('qualification', e.target.value)}
+                                placeholder="e.g., B.Sc Mathematics"
+                            />
+                        </>
                     )}
                 </div>
                 <div className="mt-6 flex justify-end gap-3">

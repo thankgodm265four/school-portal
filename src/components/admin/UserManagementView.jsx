@@ -267,17 +267,6 @@ export default function UserManagementView() {
                 </Button>
             </div>
 
-            {error && (
-                <div className="p-4 bg-danger-50 dark:bg-danger-900/20 border border-danger-200 dark:border-danger-800 rounded-xl">
-                    <div className="flex items-center gap-2">
-                        <svg className="w-5 h-5 text-danger-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <p className="text-sm text-danger-700 dark:text-danger-400">{error}</p>
-                    </div>
-                </div>
-            )}
-
             <Card padding={false}>
                 {/* Tabs */}
                 <div className="border-b border-neutral-200 dark:border-neutral-700 px-6 pt-4">

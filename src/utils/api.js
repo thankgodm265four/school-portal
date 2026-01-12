@@ -347,3 +347,95 @@ export async function deleteParent(id) {
 
     return true;
 }
+
+// =============================================================================
+// SETTINGS OPERATIONS
+// =============================================================================
+
+/**
+ * Fetch all settings from Supabase
+ * @returns {Promise<Object>} Settings object with key-value pairs
+ */
+export async function getSettings() {
+    if (!isSupabaseConfigured()) {
+        console.warn('Supabase not configured. Please add credentials to .env file.');
+        return {};
+    }
+
+    const { data, error } = await supabase
+        .from('settings')
+        .select('*');
+
+    if (error) {
+        console.error('Error fetching settings:', error);
+        throw new Error(`Failed to fetch settings: ${error.message}`);
+    }
+
+    // Convert array to object with key-value pairs
+    const settingsObj = {};
+    data.forEach(setting => {
+        try {
+            // Parse JSONB value
+            settingsObj[setting.key] = typeof setting.value === 'string'
+                ? JSON.parse(setting.value)
+                : setting.value;
+        } catch (e) {
+            settingsObj[setting.key] = setting.value;
+        }
+    });
+
+    return settingsObj;
+}
+
+/**
+ * Update a setting value
+ * @param {string} key - Setting key
+ * @param {any} value - New value (will be JSON stringified)
+ * @returns {Promise<Object>} Updated setting
+ */
+export async function updateSetting(key, value) {
+    if (!isSupabaseConfigured()) {
+        throw new Error('Supabase not configured');
+    }
+
+    // Convert value to JSONB
+    const jsonValue = JSON.stringify(value);
+
+    const { data, error } = await supabase
+        .from('settings')
+        .update({ value: jsonValue })
+        .eq('key', key)
+        .select()
+        .single();
+
+    if (error) {
+        console.error('Error updating setting:', error);
+        throw new Error(`Failed to update setting: ${error.message}`);
+    }
+
+    return data;
+}
+
+/**
+ * Update multiple settings at once
+ * @param {Object} settings - Object with key-value pairs to update
+ * @returns {Promise<boolean>} Success status
+ */
+export async function updateSettings(settings) {
+    if (!isSupabaseConfigured()) {
+        throw new Error('Supabase not configured');
+    }
+
+    try {
+        // Update each setting
+        const updates = Object.entries(settings).map(([key, value]) =>
+            updateSetting(key, value)
+        );
+
+        await Promise.all(updates);
+        return true;
+    } catch (error) {
+        console.error('Error updating settings:', error);
+        throw error;
+    }
+}

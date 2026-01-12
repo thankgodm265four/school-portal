@@ -1,0 +1,12 @@
+---
+import DashboardLayout from "../../layouts/DashboardLayout.astro";
+import SettingsView from "../../components/admin/SettingsView.jsx";
+---
+
+<DashboardLayout
+    title="Settings - Unity Secondary School"
+    role="admin"
+    userName="Admin User"
+>
+    <SettingsView client:load />
+</DashboardLayout>
